@@ -537,6 +537,8 @@ function getIntersection(rect, dx, dy, isTarget) {
 const onboardingOverlay = document.getElementById('onboarding-overlay');
 const step1 = document.getElementById('step-1');
 const step2 = document.getElementById('step-2');
+const stepCustomName = document.getElementById('step-custom-name');
+const modalHeader = document.querySelector('.modal-header');
 const selectBtns = document.querySelectorAll('.select-tool-btn');
 const continueBtn = document.getElementById('continue-btn');
 const doneBtn = document.getElementById('done-btn');
@@ -599,12 +601,7 @@ selectBtns.forEach(btn => {
         selectedConfig = target.getAttribute('data-config');
         continueBtn.disabled = false;
 
-        // Show/hide custom picker
-        const picker = document.getElementById('custom-tool-picker');
-        if (selectedConfig === 'custom') {
-            picker.classList.remove('hidden');
-        } else {
-            picker.classList.add('hidden');
+        if (selectedConfig !== 'custom') {
             renderSidebar(selectedConfig);
         }
     });
@@ -612,7 +609,23 @@ selectBtns.forEach(btn => {
 
 continueBtn.addEventListener('click', () => {
     step1.classList.add('hidden');
-    step2.classList.remove('hidden');
+    if (selectedConfig === 'custom') {
+        modalHeader.classList.add('hidden');
+        stepCustomName.classList.remove('hidden');
+        document.getElementById('toolbar-name-input').focus();
+    } else {
+        step2.classList.remove('hidden');
+    }
+});
+
+document.getElementById('cancel-custom-name-btn').addEventListener('click', () => {
+    stepCustomName.classList.add('hidden');
+    modalHeader.classList.remove('hidden');
+    step1.classList.remove('hidden');
+});
+
+document.getElementById('continue-custom-name-btn').addEventListener('click', () => {
+    // Next step (tool selection) — to be implemented
 });
 
 doneBtn.addEventListener('click', () => {

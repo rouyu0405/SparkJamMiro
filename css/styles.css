@@ -488,6 +488,103 @@ kbd.inline-kbd {
 #done-btn:hover { background: #2b42c4; }
 
 /* -------------------------
+    CUSTOM TOOLBAR NAME STEP
+-------------------------- */
+#step-custom-name {
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+    justify-content: space-between;
+}
+
+.custom-name-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 56px 0 40px;
+    text-align: center;
+}
+
+.custom-name-icon {
+    margin-bottom: 24px;
+    line-height: 1;
+}
+
+.custom-name-icon img {
+    width: 64px;
+    height: 64px;
+}
+
+.custom-name-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #050038;
+    margin-bottom: 40px;
+}
+
+.custom-name-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 320px;
+}
+
+.custom-name-label {
+    font-size: 14px;
+    color: #888;
+    font-weight: 400;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.toolbar-name-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid #050038;
+    outline: none;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 6px 0;
+    text-align: center;
+    color: #050038;
+    background: transparent;
+    box-sizing: border-box;
+}
+
+.toolbar-name-input:focus { border-bottom-color: #4262ff; }
+
+.cancel-link {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: #050038;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-weight: 500;
+}
+
+.cancel-link:hover { color: #333; }
+
+.continue-custom-btn {
+    background: #4262ff;
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.continue-custom-btn:hover { background: #2b42c4; }
+
+/* -------------------------
     CUSTOM TOOL PICKER
 -------------------------- */
 #custom-tool-picker {
@@ -625,6 +722,8 @@ kbd.inline-kbd {
 .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
 input:checked + .slider { background-color: #4262ff; }
 input:checked + .slider:before { transform: translateX(22px); }
+.setting-card:has(:focus-visible) { border: 2px solid #4262ff; }
+.toggle-switch input:focus-visible + .slider { outline: 2px solid #4262ff; outline-offset: 2px; }
 
 /* Update Sidebar Z-index */
 #sidebar { z-index: 1001; transition: all 0.3s ease; }
