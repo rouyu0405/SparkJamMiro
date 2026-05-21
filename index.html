@@ -224,24 +224,35 @@
                     </div>
                 </div>
 
-                <div class="modal-footer right-align">
-                    <button id="continue-btn" disabled>Continue</button>
-                </div>
-            </div>
-
-            <!-- STEP CUSTOM NAME -->
-            <div id="step-custom-name" class="hidden">
-                <div class="custom-name-body">
-                    <div class="custom-name-icon"><img src="img/icons/gear.svg" alt=""></div>
-                    <h3 class="custom-name-title">Create custom toolbar setup</h3>
-                    <div class="custom-name-field">
-                        <label class="custom-name-label" for="toolbar-name-input">Name your toolbar</label>
-                        <input type="text" id="toolbar-name-input" class="toolbar-name-input" autocomplete="off">
+                <!-- Custom Tool Picker (hidden until custom is selected) -->
+                <div id="custom-tool-picker" class="hidden">
+                    <div class="picker-header">
+                        <h4>Select tools for your toolbar</h4>
+                        <p class="picker-subtitle">Choose up to 8 tools. Drag to reorder.</p>
+                    </div>
+                    <div class="picker-categories">
+                        <div class="picker-category">
+                            <h5>Core</h5>
+                            <div class="picker-tools-grid" id="picker-grid-core"></div>
+                        </div>
+                        <div class="picker-category">
+                            <h5>Creation</h5>
+                            <div class="picker-tools-grid" id="picker-grid-creation"></div>
+                        </div>
+                        <div class="picker-category">
+                            <h5>Accessibility</h5>
+                            <div class="picker-tools-grid" id="picker-grid-a11y"></div>
+                        </div>
+                    </div>
+                    <div class="picker-preview-row">
+                        <span class="picker-preview-label">Your toolbar:</span>
+                        <div id="picker-live-preview"></div>
+                        <span class="picker-count" id="picker-count">0 / 8 selected</span>
                     </div>
                 </div>
-                <div class="modal-footer space-between">
-                    <button id="cancel-custom-name-btn" class="cancel-link">Cancel creating new toolbar</button>
-                    <button id="continue-custom-name-btn" class="continue-custom-btn">Continue to selecting your tools</button>
+
+                <div class="modal-footer right-align">
+                    <button id="continue-btn" disabled>Continue</button>
                 </div>
             </div>
 
