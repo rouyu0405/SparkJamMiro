@@ -21,11 +21,6 @@ body, html {
     transform-origin: 0 0;
 }
 
-#svg-layer {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; overflow: visible; z-index: 4;
-}
-
 #html-layer {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 5;
@@ -54,6 +49,7 @@ body, html {
 .icon-btn img { width: 32px; height: 32px; display: block; }
 .icon-btn:hover { background-color: #f0f0f0; }
 .icon-btn.active { background: #e5e7ff; color: #4262ff; outline: 2px solid #4262ff; }
+.icon-btn:focus-visible { outline: 2px solid #4262ff; outline-offset: 2px; }
 .hidden { display: none !important; }
 
 /* -------------------------
@@ -66,6 +62,12 @@ body, html {
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
+/* Focus ring for keyboard navigation — applied when object is focused via Tab */
+.board-object:focus {
+    outline: 3px solid #4262ff;
+    outline-offset: 2px;
+}
+
 .board-object.active-obj { outline: 3px solid #4262ff; z-index: 100; }
 
 /* Generic textarea for non-sticky objects */
@@ -75,7 +77,9 @@ body, html {
     font-family: 'DM Sans', sans-serif;
 }
 
-/* Fixed-square sticky note — ratio never changes, font scales to fit */
+/* ─────────────────────────────────────────────────────
+   STICKY NOTE — fixed 200×200 square, never resizes
+───────────────────────────────────────────────────── */
 .sticky-note {
     width: 200px;
     height: 200px;
@@ -88,8 +92,9 @@ body, html {
     align-items: stretch;
     box-shadow: 2px 6px 16px rgba(0,0,0,0.13);
     z-index: 10;
-    /* NO overflow:hidden — format bar must be visible above */
     overflow: visible;
+    position: relative;
+    cursor: default;
 }
 
 /* Inner wrapper fills the square */
@@ -117,26 +122,38 @@ body, html {
     font-family: 'DM Sans', sans-serif;
     font-weight: 500;
     color: #1a1a2e;
+    /* Pointer events OFF by default — only on during edit */
     cursor: default;
     pointer-events: none;
     display: block;
 }
 
-/* -------------------------
-    STICKY CONTAINER WRAPPER
-   (holds format bar + note so bar isn't clipped)
--------------------------- */
+/* Textarea becomes interactive while editing */
+.sticky-note textarea.editing-textarea {
+    pointer-events: auto;
+    cursor: text;
+}
+
+/* ─────────────────────────────────────────────────────
+   STICKY CONTAINER
+   Holds format bar (above) + sticky note (below)
+   so the bar never gets clipped by the note's overflow
+───────────────────────────────────────────────────── */
 .sticky-container {
     position: absolute;
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;          /* space between bar and note */
+    gap: 6px;
     user-select: none;
     z-index: 10;
 }
 
-/* Format bar base visual styles */
+/* ─────────────────────────────────────────────────────
+   FORMAT BAR
+   Hidden by default. Only visible when the container
+   has .editing-container (i.e. textarea is focused).
+───────────────────────────────────────────────────── */
 .sticky-format-bar {
     background: #ffffff;
     border-radius: 8px;
@@ -146,34 +163,31 @@ body, html {
     gap: 2px;
     padding: 5px 8px;
     white-space: nowrap;
-    z-index: 200;
     border: 1px solid rgba(0,0,0,0.07);
-}
+    order: -1; /* always renders above the sticky */
 
-/* Format bar hidden by default */
-.sticky-container .sticky-format-bar {
+    /* Hidden state */
     opacity: 0;
     pointer-events: none;
-    transform: translateY(4px);
+    transform: translateY(6px);
     transition: opacity 0.15s ease, transform 0.15s ease;
-    position: relative;  /* normal flow inside flex column */
-    top: auto; left: auto;
-    transform-origin: center;
-    order: -1;           /* always rendered above the note */
 }
 
-/* Show bar + blue outline when container is active */
-.sticky-container.active-container .sticky-format-bar {
+/* Shown ONLY when actively editing text */
+.sticky-container.editing-container .sticky-format-bar {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
 }
 
+/* Selection outline on the sticky itself */
 .sticky-container.active-container .sticky-note {
     outline: 3px solid #4262ff;
-    z-index: 100;
 }
 
+/* ─────────────────────────────────────────────────────
+   FORMAT BAR BUTTONS
+───────────────────────────────────────────────────── */
 .fmt-btn {
     background: none;
     border: none;
@@ -191,9 +205,9 @@ body, html {
     transition: background 0.1s, color 0.1s;
     flex-shrink: 0;
 }
-
 .fmt-btn:hover { background: #f0f0f4; color: #050038; }
 .fmt-btn.fmt-active { background: #eef1ff; color: #4262ff; }
+.fmt-btn:focus-visible { outline: 2px solid #4262ff; outline-offset: 1px; border-radius: 4px; }
 
 .fmt-divider {
     width: 1px;
@@ -214,6 +228,11 @@ body, html {
     transition: transform 0.1s;
 }
 .fmt-color-dot:hover { transform: scale(1.2); }
+.fmt-color-dot:focus-visible { outline: 2px solid #4262ff; outline-offset: 2px; border-radius: 50%; }
+
+/* ─────────────────────────────────────────────────────
+   OTHER OBJECT TYPES
+───────────────────────────────────────────────────── */
 .shape-rect { width: 160px; height: 100px; background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 10px; }
 .text-box { width: 200px; height: auto; background: transparent; box-shadow: none; padding: 5px; }
 .text-box textarea { text-align: left; font-size: 18px; color: #050038; overflow: hidden; height: 40px; }
@@ -221,6 +240,9 @@ body, html {
 .frame-box.active-obj { z-index: 1 !important; outline: 3px solid #4262ff; }
 .frame-title { position: absolute; top: -25px; left: 0; font-size: 14px; font-weight: bold; color: #555; pointer-events: none; }
 
+/* ─────────────────────────────────────────────────────
+   CONNECTION HANDLES
+───────────────────────────────────────────────────── */
 .conn-handle { position: absolute; width: 12px; height: 12px; background: #ffffff; border: 2px solid #4262ff; border-radius: 50%; cursor: crosshair; z-index: 10; opacity: 0; transition: opacity 0.15s ease, transform 0.15s ease; }
 .board-object:hover .conn-handle, .board-object.active-obj .conn-handle { opacity: 1; }
 .conn-handle:hover { transform: scale(1.3); background: #4262ff; }
@@ -229,9 +251,9 @@ body, html {
 .conn-handle.bottom { bottom: -6px; left: calc(50% - 6px); }
 .conn-handle.left   { left: -6px; top: calc(50% - 6px); }
 
-/* -------------------------
-    KEYBOARD SHORTCUTS BUTTON
--------------------------- */
+/* ─────────────────────────────────────────────────────
+   KEYBOARD SHORTCUTS BUTTON
+───────────────────────────────────────────────────── */
 #shortcuts-toggle-btn {
     position: fixed;
     bottom: 24px;
@@ -252,13 +274,15 @@ body, html {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     transition: box-shadow 0.15s, border-color 0.15s, background 0.15s;
 }
-
 #shortcuts-toggle-btn:hover {
     border-color: #4262ff;
     box-shadow: 0 4px 14px rgba(66, 98, 255, 0.15);
     background: #f5f7ff;
 }
-
+#shortcuts-toggle-btn:focus-visible {
+    outline: 2px solid #4262ff;
+    outline-offset: 2px;
+}
 #shortcuts-toggle-btn span:first-child {
     display: flex; align-items: center; justify-content: center;
     width: 22px; height: 22px;
@@ -267,17 +291,16 @@ body, html {
     font-size: 13px; font-weight: 700;
     line-height: 1;
 }
-
 .shortcuts-btn-label { letter-spacing: 0.01em; }
 
-/* -------------------------
-    KEYBOARD SHORTCUTS PANEL
--------------------------- */
+/* ─────────────────────────────────────────────────────
+   KEYBOARD SHORTCUTS PANEL
+───────────────────────────────────────────────────── */
 #shortcuts-panel {
     position: fixed;
     bottom: 72px;
     right: 24px;
-    width: 380px;
+    width: 400px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
     background: #ffffff;
@@ -301,14 +324,7 @@ body, html {
     border-radius: 12px 12px 0 0;
     z-index: 1;
 }
-
-.shortcuts-panel-header h2 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #050038;
-    letter-spacing: -0.2px;
-}
-
+.shortcuts-panel-header h2 { font-size: 16px; font-weight: 700; color: #050038; letter-spacing: -0.2px; }
 #shortcuts-close-btn {
     background: none; border: none; cursor: pointer;
     font-size: 14px; color: #888; width: 28px; height: 28px;
@@ -316,109 +332,47 @@ body, html {
     transition: background 0.1s, color 0.1s;
 }
 #shortcuts-close-btn:hover { background: #f0f0f2; color: #050038; }
+#shortcuts-close-btn:focus-visible { outline: 2px solid #4262ff; outline-offset: 1px; }
 
-.shortcuts-section {
-    padding: 16px 20px;
-    border-bottom: 1px solid #f0f0f2;
-}
+.shortcuts-section { padding: 16px 20px; border-bottom: 1px solid #f0f0f2; }
 .shortcuts-section:last-child { border-bottom: none; }
-
 .shortcuts-section-title {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #888;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #888; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
 }
-
 .section-icon { font-size: 14px; }
-
 .new-badge {
-    background: #4262ff;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    padding: 2px 6px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    margin-left: 4px;
+    background: #4262ff; color: #fff; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.04em; padding: 2px 6px; border-radius: 20px;
+    text-transform: uppercase; margin-left: 4px;
 }
-
-.shortcuts-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.shortcuts-table tr {
-    border-radius: 6px;
-    transition: background 0.1s;
-}
-
+.shortcuts-table { width: 100%; border-collapse: collapse; }
+.shortcuts-table tr { border-radius: 6px; transition: background 0.1s; }
 .shortcuts-table tr:hover td { background: #f7f8ff; }
 .shortcuts-table tr:hover td:first-child { border-radius: 6px 0 0 6px; }
 .shortcuts-table tr:hover td:last-child { border-radius: 0 6px 6px 0; }
+.shortcuts-table td { padding: 7px 8px; font-size: 13px; color: #333; vertical-align: middle; }
+.shortcuts-table td:first-child { color: #050038; font-weight: 500; width: 55%; }
+.shortcuts-table td:last-child { text-align: right; white-space: nowrap; }
 
-.shortcuts-table td {
-    padding: 7px 8px;
-    font-size: 13px;
-    color: #333;
-    vertical-align: middle;
-}
-
-.shortcuts-table td:first-child {
-    color: #050038;
-    font-weight: 500;
-    width: 55%;
-}
-
-.shortcuts-table td:last-child {
-    text-align: right;
-    white-space: nowrap;
-}
-
-/* KBD styling — clean pill keys */
 kbd {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #f4f4f6;
-    border: 1px solid #ddd;
-    border-bottom: 2px solid #ccc;
-    border-radius: 5px;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-family: 'DM Mono', 'Fira Mono', monospace;
-    font-weight: 500;
-    color: #333;
-    line-height: 1.4;
-    white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #f4f4f6; border: 1px solid #ddd; border-bottom: 2px solid #ccc;
+    border-radius: 5px; padding: 2px 6px; font-size: 11px;
+    font-family: 'DM Mono', 'Fira Mono', monospace; font-weight: 500;
+    color: #333; line-height: 1.4; white-space: nowrap;
 }
-
-/* Inline kbd used in settings cards */
-kbd.inline-kbd {
-    font-size: 11px;
-    padding: 1px 5px;
-}
+kbd.inline-kbd { font-size: 11px; padding: 1px 5px; }
 
 .accessibility-section { background: #fafbff; }
 .accessibility-section .shortcuts-section-title { color: #4262ff; }
-
-.shortcuts-note {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #888;
-    line-height: 1.5;
-}
+.shortcuts-note { margin-top: 10px; font-size: 12px; color: #888; line-height: 1.5; }
 .shortcuts-note strong { color: #050038; }
 
-/* -------------------------
-    ACCESSIBILITY MODAL
--------------------------- */
+/* ─────────────────────────────────────────────────────
+   ONBOARDING MODAL
+───────────────────────────────────────────────────── */
 #onboarding-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(244, 244, 245, 0.85);
@@ -426,7 +380,6 @@ kbd.inline-kbd {
     display: flex; align-items: center; justify-content: center;
     z-index: 1000; transition: opacity 0.3s ease;
 }
-
 #onboarding-overlay.hidden { display: none !important; opacity: 0; }
 
 .onboarding-modal {
@@ -435,21 +388,17 @@ kbd.inline-kbd {
     max-height: 92vh; overflow-y: auto;
     font-family: 'DM Sans', sans-serif;
 }
-
 .modal-header { text-align: center; margin-bottom: 40px; }
 .modal-logo { font-size: 32px; font-weight: 800; color: #050038; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .modal-logo span { background: #ffeb3b; padding: 4px 8px; border-radius: 4px; font-size: 24px; letter-spacing: -2px; }
 .modal-header h2 { font-size: 28px; color: #000; margin-bottom: 8px; font-weight: 700; }
 .modal-header p { font-size: 16px; color: #555; }
-
 .step-title { font-size: 22px; color: #000; margin-bottom: 28px; font-weight: 700; }
 
 .toolbar-options { display: flex; align-items: stretch; gap: 40px; margin-bottom: 28px; }
 .option-col { flex: 1; display: flex; flex-direction: column; }
 .middle-col { border-left: 1px solid #e0e0e0; border-right: 1px solid #e0e0e0; padding: 0 40px; margin: 0 -20px; }
-
 .option-col h4 { font-size: 16px; font-weight: 700; text-align: center; margin-bottom: 16px; color: #000; }
-
 .preview-box {
     border: 1px solid #000; border-radius: 8px; padding: 12px; min-height: 100px;
     display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; margin-bottom: 16px;
@@ -470,6 +419,7 @@ kbd.inline-kbd {
 }
 .select-tool-btn:hover { background: #333; }
 .select-tool-btn.selected { background: #fff; color: #000; }
+.select-tool-btn:focus-visible { outline: 2px solid #4262ff; outline-offset: 2px; }
 
 .modal-footer { display: flex; justify-content: flex-end; margin-top: 20px; }
 .modal-footer.right-align { justify-content: flex-end; }
@@ -483,6 +433,7 @@ kbd.inline-kbd {
 }
 #continue-btn:hover:not(:disabled) { background: #2b42c4; }
 #continue-btn:disabled { background: #a6b5ff; cursor: not-allowed; }
+#continue-btn:focus-visible { outline: 2px solid #050038; outline-offset: 2px; }
 
 #done-btn {
     background: #4262ff; color: #fff; border: none; padding: 12px 32px;
@@ -490,6 +441,7 @@ kbd.inline-kbd {
     transition: background 0.2s; font-family: 'DM Sans', sans-serif;
 }
 #done-btn:hover { background: #2b42c4; }
+#done-btn:focus-visible { outline: 2px solid #050038; outline-offset: 2px; }
 
 .gray-back-btn {
     background: #e5e5e8;
@@ -515,97 +467,32 @@ kbd.inline-kbd {
     CUSTOM TOOLBAR NAME STEP
 -------------------------- */
 #step-custom-name {
-    display: flex;
-    flex-direction: column;
-    min-height: 420px;
-    justify-content: space-between;
+    display: flex; flex-direction: column; min-height: 420px; justify-content: space-between;
 }
-
 .custom-name-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    padding: 56px 0 40px;
-    text-align: center;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; flex: 1; padding: 56px 0 40px; text-align: center;
 }
-
-.custom-name-icon {
-    margin-bottom: 24px;
-    line-height: 1;
-}
-
-.custom-name-icon img {
-    width: 64px;
-    height: 64px;
-}
-
-.custom-name-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #050038;
-    margin-bottom: 40px;
-}
-
-.custom-name-field {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 320px;
-}
-
-.custom-name-label {
-    font-size: 14px;
-    color: #888;
-    font-weight: 400;
-    font-family: 'DM Sans', sans-serif;
-}
-
+.custom-name-icon { margin-bottom: 24px; line-height: 1; }
+.custom-name-title { font-size: 24px; font-weight: 700; color: #050038; margin-bottom: 40px; }
+.custom-name-field { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 320px; }
+.custom-name-label { font-size: 14px; color: #888; font-weight: 400; font-family: 'DM Sans', sans-serif; }
 .toolbar-name-input {
-    width: 100%;
-    border: none;
-    border-bottom: 1.5px solid #050038;
-    outline: none;
-    font-size: 16px;
-    font-family: 'DM Sans', sans-serif;
-    padding: 6px 0;
-    text-align: center;
-    color: #050038;
-    background: transparent;
-    box-sizing: border-box;
+    width: 100%; border: none; border-bottom: 1.5px solid #050038; outline: none;
+    font-size: 16px; font-family: 'DM Sans', sans-serif;
+    padding: 6px 0; text-align: center; color: #050038; background: transparent; box-sizing: border-box;
 }
-
 .toolbar-name-input:focus { border-bottom-color: #4262ff; }
-
 .cancel-link {
-    background: none;
-    border: none;
-    font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
-    color: #050038;
-    text-decoration: underline;
-    cursor: pointer;
-    padding: 0;
-    font-weight: 500;
+    background: none; border: none; font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: #050038; text-decoration: underline; cursor: pointer; padding: 0; font-weight: 500;
 }
-
 .cancel-link:hover { color: #333; }
-
 .continue-custom-btn {
-    background: #4262ff;
-    color: #fff;
-    border: none;
-    padding: 12px 32px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s;
-    font-family: 'DM Sans', sans-serif;
+    background: #4262ff; color: #fff; border: none; padding: 12px 32px;
+    font-size: 16px; font-weight: 600; border-radius: 6px; cursor: pointer;
+    transition: background 0.2s; font-family: 'DM Sans', sans-serif;
 }
-
 .continue-custom-btn:hover { background: #2b42c4; }
 
 /* -------------------------
@@ -827,129 +714,64 @@ kbd.inline-kbd {
     CUSTOM TOOL PICKER
 -------------------------- */
 #custom-tool-picker {
-    background: #f9f9fb;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin-bottom: 20px;
+    background: #f9f9fb; border: 1px solid #e0e0e0; border-radius: 10px;
+    padding: 20px 24px; margin-bottom: 20px;
     animation: pickerReveal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 @keyframes pickerReveal {
     from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
-
 .picker-header { margin-bottom: 16px; }
 .picker-header h4 { font-size: 15px; font-weight: 700; color: #050038; margin-bottom: 4px; }
 .picker-subtitle { font-size: 13px; color: #888; }
-
 .picker-categories { display: flex; gap: 24px; margin-bottom: 16px; }
-
 .picker-category { flex: 1; }
 .picker-category h5 {
     font-size: 11px; font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.07em; color: #aaa; margin-bottom: 10px;
 }
-
-.picker-tools-grid {
-    display: flex; flex-wrap: wrap; gap: 8px;
-}
-
+.picker-tools-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .picker-tool-chip {
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 10px;
-    background: #fff;
-    border: 1.5px solid #e0e0e0;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: #333;
-    font-family: 'DM Sans', sans-serif;
-    transition: border-color 0.15s, background 0.15s, color 0.15s;
-    user-select: none;
+    display: flex; align-items: center; gap: 6px; padding: 6px 10px;
+    background: #fff; border: 1.5px solid #e0e0e0; border-radius: 6px; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: #333; font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.15s, background 0.15s, color 0.15s; user-select: none;
 }
-
 .picker-tool-chip .chip-icon { font-size: 15px; line-height: 1; }
 .picker-tool-chip .chip-label { font-size: 12px; }
+.picker-tool-chip:hover { border-color: #4262ff; background: #f5f7ff; color: #4262ff; }
+.picker-tool-chip.chip-selected { border-color: #4262ff; background: #eef1ff; color: #4262ff; }
+.picker-tool-chip:focus-visible { outline: 2px solid #4262ff; outline-offset: 1px; }
 
-.picker-tool-chip:hover {
-    border-color: #4262ff;
-    background: #f5f7ff;
-    color: #4262ff;
-}
-
-.picker-tool-chip.chip-selected {
-    border-color: #4262ff;
-    background: #eef1ff;
-    color: #4262ff;
-}
-
-.picker-tool-chip.chip-selected .chip-icon::after {
-    content: '';
-}
-
-/* Live toolbar preview row */
 .picker-preview-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    min-height: 52px;
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+    background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; min-height: 52px;
 }
-
 .picker-preview-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #aaa;
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 12px; font-weight: 600; color: #aaa; white-space: nowrap;
+    text-transform: uppercase; letter-spacing: 0.05em;
 }
-
 #picker-live-preview {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    flex: 1;
-    flex-wrap: wrap;
+    display: flex; gap: 6px; align-items: center; flex: 1; flex-wrap: wrap;
 }
-
 .preview-chip {
-    background: #f0f0f2;
-    border-radius: 5px;
-    width: 30px; height: 30px;
+    background: #f0f0f2; border-radius: 5px; width: 30px; height: 30px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    border: 1px solid #e0e0e0;
+    font-size: 16px; border: 1px solid #e0e0e0;
 }
-
-.picker-count {
-    font-size: 12px;
-    font-weight: 600;
-    color: #aaa;
-    white-space: nowrap;
-    min-width: 70px;
-    text-align: right;
-}
-
+.picker-count { font-size: 12px; font-weight: 600; color: #aaa; white-space: nowrap; min-width: 70px; text-align: right; }
 .picker-count.at-max { color: #4262ff; }
 
-/* -------------------------
-    STEP 2: SETTINGS CARDS
--------------------------- */
+/* ─────────────────────────────────────────────────────
+   STEP 2: SETTINGS CARDS
+───────────────────────────────────────────────────── */
 .settings-list { display: flex; flex-direction: column; gap: 14px; }
-
 .setting-card {
     display: flex; align-items: center; justify-content: space-between;
     border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px 24px;
     background: #fff; gap: 16px;
 }
-
 .setting-icon { font-size: 22px; width: 36px; display: flex; justify-content: center; flex-shrink: 0; }
 .setting-text { flex-grow: 1; }
 .setting-text h4 { font-size: 15px; font-weight: 700; color: #000; margin-bottom: 6px; }
@@ -964,28 +786,67 @@ input:checked + .slider:before { transform: translateX(22px); }
 .setting-card:has(:focus-visible) { border: 2px solid #4262ff; }
 .toggle-switch input:focus-visible + .slider { outline: 2px solid #4262ff; outline-offset: 2px; }
 
-/* Update Sidebar Z-index */
+/* ─────────────────────────────────────────────────────
+   SIDEBAR Z-INDEX
+───────────────────────────────────────────────────── */
 #sidebar { z-index: 1001; transition: all 0.3s ease; }
 
-/* -------------------------
-    STICKY COLOR PANEL
--------------------------- */
+/* ─────────────────────────────────────────────────────
+   STICKY COLOR PANEL
+───────────────────────────────────────────────────── */
 #sticky-color-panel {
     position: fixed; top: 50%; left: 72px; transform: translateY(-50%);
     background: #ffffff; border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 12px;
     display: flex; flex-direction: column; gap: 10px; z-index: 1001;
 }
-
 .color-grid { display: grid; grid-template-columns: repeat(2, 44px); gap: 10px; }
-
-.sticky-color-swatch { width: 44px; height: 44px; border-radius: 4px; cursor: pointer; border: 1px solid rgba(0,0,0,0.08); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.05); transition: transform 0.15s, border-color 0.15s; }
+.sticky-color-swatch {
+    width: 44px; height: 44px; border-radius: 4px; cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.08); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.05);
+    transition: transform 0.15s, border-color 0.15s;
+}
 .sticky-color-swatch:hover { transform: scale(1.05); }
 .sticky-color-swatch.selected-color { outline: 2px solid #4262ff; outline-offset: 2px; }
+.sticky-color-swatch:focus-visible { outline: 3px solid #4262ff; outline-offset: 2px; }
 
-.panel-action-btn { background: #f1f3f5; border: none; color: #050038; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; transition: background 0.1s; font-family: 'DM Sans', sans-serif; }
+.panel-action-btn {
+    background: #f1f3f5; border: none; color: #050038; font-size: 13px; font-weight: 600;
+    padding: 8px 12px; border-radius: 6px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+    transition: background 0.1s; font-family: 'DM Sans', sans-serif;
+}
 .panel-action-btn:hover { background: #e2e6ea; }
 .panel-action-btn .btn-icon { font-size: 14px; }
 
-/* Screen reader only */
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+/* ─────────────────────────────────────────────────────
+   SCREEN READER & LIVE REGIONS
+───────────────────────────────────────────────────── */
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ─────────────────────────────────────────────────────
+   TOAST — brief visual confirmation for sighted users
+───────────────────────────────────────────────────── */
+.a11y-toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    background: #050038;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+    max-width: 380px;
+    text-align: center;
+}
+.a11y-toast.fade-out { opacity: 0; }
