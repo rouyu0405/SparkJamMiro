@@ -127,10 +127,17 @@ function setupTextEditing(el, textarea) {
         el.classList.add('editing');
         textarea.style.pointerEvents = 'auto';
         textarea.focus();
+        // Show format bar only while editing
+        const container = el.closest('.sticky-container');
+        if (container) container.classList.add('editing-container');
     });
+
     textarea.addEventListener('blur', () => {
         el.classList.remove('editing');
         textarea.style.pointerEvents = 'none';
+        // Hide format bar when done editing
+        const container = el.closest('.sticky-container');
+        if (container) container.classList.remove('editing-container');
     });
 }
 
@@ -271,7 +278,13 @@ function buildStickyFormatBar(el, textarea) {
     bar.append(boldBtn, italicBtn, alignBtn, div1, sizeDownBtn, sizeUpBtn, div2, colorDot);
 
     // Stop bar clicks from triggering board interactions
-    bar.addEventListener('mousedown', e => e.stopPropagation());
+    // Stop bar clicks from blurring the textarea
+    bar.addEventListener('mousedown', e => {
+        e.stopPropagation();
+        e.preventDefault(); // prevents textarea blur
+        // Restore focus to textarea after button action
+        setTimeout(() => textarea.focus(), 0);
+    });
     return bar;
 }
 
@@ -460,9 +473,15 @@ function beginConnectionDraw(e, sourceObj) {
 }
 
 function calculateMiroCurve(sx, sy, tx, ty) {
-    const deltaX = Math.abs(tx - sx);
-    const controlOffset = Math.min(deltaX * 0.5, 120);
-    return `M ${sx} ${sy} C ${sx + controlOffset} ${sy}, ${tx - controlOffset} ${ty}, ${tx} ${ty}`;
+    const dx = Math.abs(tx - sx);
+    const dy = Math.abs(ty - sy);
+    // Use whichever axis dominates to set a sensible control-point distance
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const offset = Math.min(dist * 0.4, 150);
+    // Horizontal bias when wide, vertical bias when tall
+    const cpX = dx >= dy ? offset : 0;
+    const cpY = dx >= dy ? 0 : offset;
+    return `M ${sx} ${sy} C ${sx + cpX} ${sy + cpY}, ${tx - cpX} ${ty - cpY}, ${tx} ${ty}`;
 }
 
 window.addEventListener('mousemove', (e) => {
@@ -537,8 +556,6 @@ function getIntersection(rect, dx, dy, isTarget) {
 const onboardingOverlay = document.getElementById('onboarding-overlay');
 const step1 = document.getElementById('step-1');
 const step2 = document.getElementById('step-2');
-const stepCustomName = document.getElementById('step-custom-name');
-const modalHeader = document.querySelector('.modal-header');
 const selectBtns = document.querySelectorAll('.select-tool-btn');
 const continueBtn = document.getElementById('continue-btn');
 const doneBtn = document.getElementById('done-btn');
@@ -601,7 +618,12 @@ selectBtns.forEach(btn => {
         selectedConfig = target.getAttribute('data-config');
         continueBtn.disabled = false;
 
-        if (selectedConfig !== 'custom') {
+        // Show/hide custom picker
+        const picker = document.getElementById('custom-tool-picker');
+        if (selectedConfig === 'custom') {
+            picker.classList.remove('hidden');
+        } else {
+            picker.classList.add('hidden');
             renderSidebar(selectedConfig);
         }
     });
@@ -609,23 +631,7 @@ selectBtns.forEach(btn => {
 
 continueBtn.addEventListener('click', () => {
     step1.classList.add('hidden');
-    if (selectedConfig === 'custom') {
-        modalHeader.classList.add('hidden');
-        stepCustomName.classList.remove('hidden');
-        document.getElementById('toolbar-name-input').focus();
-    } else {
-        step2.classList.remove('hidden');
-    }
-});
-
-document.getElementById('cancel-custom-name-btn').addEventListener('click', () => {
-    stepCustomName.classList.add('hidden');
-    modalHeader.classList.remove('hidden');
-    step1.classList.remove('hidden');
-});
-
-document.getElementById('continue-custom-name-btn').addEventListener('click', () => {
-    // Next step (tool selection) — to be implemented
+    step2.classList.remove('hidden');
 });
 
 doneBtn.addEventListener('click', () => {
@@ -868,7 +874,11 @@ window.addEventListener('keydown', (e) => {
         return;
     }
 
-    const selectedEl = document.querySelector('.board-object.active-obj');
+    // Find selected object — stickies use active-container on their wrapper
+    const activeContainer = document.querySelector('.sticky-container.active-container');
+    const selectedEl = activeContainer
+        ? activeContainer.querySelector('.board-object')
+        : document.querySelector('.board-object.active-obj');
 
     if ((e.key === 'n' || e.key === 'N') && !isWaitingForDirection) {
         if (!selectedEl) {
@@ -889,10 +899,12 @@ window.addEventListener('keydown', (e) => {
     }
 
     if (isWaitingForDirection && selectedEl) {
-        const currentX = parseFloat(selectedEl.style.left);
-        const currentY = parseFloat(selectedEl.style.top);
-        const currentW = selectedEl.offsetWidth || 100;
-        const currentH = selectedEl.offsetHeight || 100;
+        // For stickies, position lives on the container; for others, on the element itself
+        const posSource = activeContainer || selectedEl;
+        const currentX = parseFloat(posSource.style.left) || 0;
+        const currentY = parseFloat(posSource.style.top)  || 0;
+        const currentW = selectedEl.offsetWidth  || 200;
+        const currentH = selectedEl.offsetHeight || 200;
         const spacingGap = 60;
 
         if (e.key === 'ArrowRight' && !e.shiftKey) {
@@ -910,7 +922,9 @@ window.addEventListener('keydown', (e) => {
             isWaitingForDirection = false;
             clearTimeout(directionTimeout);
             spawnObject('sticky', currentX, currentY + currentH + spacingGap);
-            const targetEl = document.querySelector('.board-object.active-obj');
+            // New sticky uses active-container, not active-obj
+            const newContainer = document.querySelector('.sticky-container.active-container');
+            const targetEl = newContainer ? newContainer.querySelector('.board-object') : null;
             if (targetEl && targetEl !== selectedEl) {
                 fitStickyFont(targetEl);
                 const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
