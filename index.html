@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Miro Complete Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
@@ -38,6 +41,120 @@
         <div class="board-title">🧠 brainstorming board</div>
     </div>
 
+    <!-- Keyboard Shortcuts Button (bottom right) -->
+    <button id="shortcuts-toggle-btn" aria-label="Show keyboard shortcuts" title="Keyboard shortcuts (?)">
+        <span aria-hidden="true">?</span>
+        <span class="shortcuts-btn-label">Shortcuts</span>
+    </button>
+
+    <!-- Keyboard Shortcuts Panel -->
+    <div id="shortcuts-panel" class="hidden" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts reference">
+        <div class="shortcuts-panel-header">
+            <h2>Keyboard Shortcuts</h2>
+            <button id="shortcuts-close-btn" aria-label="Close shortcuts panel">✕</button>
+        </div>
+
+        <div class="shortcuts-section">
+            <h3 class="shortcuts-section-title">
+                <span class="section-icon" aria-hidden="true">🧭</span> Navigation &amp; Canvas
+            </h3>
+            <table class="shortcuts-table" aria-label="Navigation shortcuts">
+                <tbody>
+                    <tr>
+                        <td>Pan canvas</td>
+                        <td><kbd>Click</kbd> + <kbd>Drag</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Select tool</td>
+                        <td><kbd>V</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Zoom in / out</td>
+                        <td><kbd>Ctrl</kbd> + <kbd>+</kbd> / <kbd>−</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Fit board to screen</td>
+                        <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>H</kbd></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="shortcuts-section">
+            <h3 class="shortcuts-section-title">
+                <span class="section-icon" aria-hidden="true">✏️</span> Creation Tools
+            </h3>
+            <table class="shortcuts-table" aria-label="Creation tool shortcuts">
+                <tbody>
+                    <tr>
+                        <td>Text</td>
+                        <td><kbd>T</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Sticky note</td>
+                        <td><kbd>N</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Shape</td>
+                        <td><kbd>S</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Pen / Draw</td>
+                        <td><kbd>P</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Frame</td>
+                        <td><kbd>F</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Edit selected object</td>
+                        <td><kbd>Enter</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Delete selected</td>
+                        <td><kbd>Del</kbd> or <kbd>Backspace</kbd></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="shortcuts-section accessibility-section">
+            <h3 class="shortcuts-section-title">
+                <span class="section-icon" aria-hidden="true">♿</span> Accessibility Shortcuts
+                <span class="new-badge">New</span>
+            </h3>
+            <table class="shortcuts-table" aria-label="Accessibility shortcuts">
+                <tbody>
+                    <tr>
+                        <td>Describe selected object</td>
+                        <td><kbd>Ctrl</kbd> + <kbd>I</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Describe board overview</td>
+                        <td><kbd>Ctrl</kbd> + <kbd>D</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Create note to the right</td>
+                        <td><kbd>N</kbd> then <kbd>→</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Create note below + link</td>
+                        <td><kbd>N</kbd> then <kbd>Shift</kbd> + <kbd>↓</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Read alt-text of selected</td>
+                        <td><kbd>Ctrl</kbd> + <kbd>I</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>Open shortcuts panel</td>
+                        <td><kbd>?</kbd></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="shortcuts-note">Accessibility shortcuts are enabled by default. Manage them in <strong>Settings → Accessibility</strong>.</p>
+        </div>
+    </div>
+
     <!-- Left Dynamic Sidebar with New Tools -->
     <div class="toolbar left-vertical" id="sidebar">
         <button class="icon-btn tool-btn active" data-tool="select" title="Select (V)">↖</button>
@@ -49,56 +166,88 @@
     </div>
 
     <div id="sticky-color-panel" class="hidden">
-        <div class="color-grid" id="color-grid-container">
-        </div>
+        <div class="color-grid" id="color-grid-container"></div>
         <button class="panel-action-btn"><span class="btn-icon">✦</span> Generate</button>
         <button class="panel-action-btn"><span class="btn-icon">🗂</span> Stack</button>
     </div>
 
+    <!-- ONBOARDING MODAL -->
     <div id="onboarding-overlay">
         <div class="onboarding-modal">
             <div class="modal-header">
-                <div class="modal-logo"><span>\\\\</span> miro</div>
+                <div class="modal-logo"><span>\\</span> miro</div>
                 <h2>Accessibility Settings</h2>
                 <p>Set up Miro how you want to use it.</p>
             </div>
 
+            <!-- STEP 1 -->
             <div id="step-1">
-                <h3 class="step-title">1/2: Customize your toolbars</h3>
+                <h3 class="step-title">1/2: Customize your toolbar</h3>
 
                 <div class="toolbar-options">
+                    <!-- Simple -->
                     <div class="option-col">
                         <h4>Simple toolbar</h4>
                         <div class="preview-box">
-                            <span>↖</span> <span>🪟</span> <span>📝</span> <span>▱</span>
-                            <span>⛶</span> <span>🔗</span> <span class="add-btn">+</span>
+                            <span>↖</span><span>🪟</span><span>📝</span><span>▱</span>
+                            <span>⛶</span><span>🔗</span><span class="add-btn">+</span>
                         </div>
-                        <p class="desc">Best for screen readers. 6 creation tools and hides visual presentation tools.
-                        </p>
+                        <p class="desc">Best for screen readers. 6 creation tools and hides visual presentation tools.</p>
                         <a href="#" class="link">Show creation tools</a>
                         <button class="select-tool-btn" data-config="simple">Choose preferred toolbar</button>
                     </div>
 
+                    <!-- Default -->
                     <div class="option-col middle-col">
                         <h4>Default toolbar</h4>
                         <div class="preview-box">
-                            <span>↖</span> <span>📝</span> <span>🪟</span> <span>📄</span>
-                            <span>T</span> <span>▱</span> <span>🖊</span> <span>⛶</span>
-                            <span>😊</span> <span>💬</span> <span>🔗</span> <span class="add-btn">+</span>
+                            <span>↖</span><span>📝</span><span>🪟</span><span>📄</span>
+                            <span>T</span><span>▱</span><span>🖊</span><span>⛶</span>
+                            <span>😊</span><span>💬</span><span>🔗</span><span class="add-btn">+</span>
                         </div>
                         <p class="desc">11 creation tools; other tools available in submenu.</p>
                         <a href="#" class="link">Show creation tools</a>
                         <button class="select-tool-btn" data-config="default">Choose default toolbar</button>
                     </div>
 
+                    <!-- Custom -->
                     <div class="option-col">
                         <h4>Create your own toolbar</h4>
-                        <div class="preview-box custom-preview">
-                            <span>?</span> <span>?</span> <span class="add-btn">+</span>
+                        <div class="preview-box custom-preview" id="custom-preview-box">
+                            <span class="custom-placeholder-icon">?</span>
+                            <span class="custom-placeholder-icon">?</span>
+                            <span class="add-btn">+</span>
                         </div>
                         <p class="desc">Choose which tools are easily accessible.</p>
-                        <a href="#" class="link">Show 34 available tools</a>
-                        <button class="select-tool-btn" data-config="custom">Create custom toolbar</button>
+                        <a href="#" class="link" id="show-tools-link">Show 34 available tools</a>
+                        <button class="select-tool-btn" data-config="custom" id="custom-toolbar-btn">Create custom toolbar</button>
+                    </div>
+                </div>
+
+                <!-- Custom Tool Picker (hidden until custom is selected) -->
+                <div id="custom-tool-picker" class="hidden">
+                    <div class="picker-header">
+                        <h4>Select tools for your toolbar</h4>
+                        <p class="picker-subtitle">Choose up to 8 tools. Drag to reorder.</p>
+                    </div>
+                    <div class="picker-categories">
+                        <div class="picker-category">
+                            <h5>Core</h5>
+                            <div class="picker-tools-grid" id="picker-grid-core"></div>
+                        </div>
+                        <div class="picker-category">
+                            <h5>Creation</h5>
+                            <div class="picker-tools-grid" id="picker-grid-creation"></div>
+                        </div>
+                        <div class="picker-category">
+                            <h5>Accessibility</h5>
+                            <div class="picker-tools-grid" id="picker-grid-a11y"></div>
+                        </div>
+                    </div>
+                    <div class="picker-preview-row">
+                        <span class="picker-preview-label">Your toolbar:</span>
+                        <div id="picker-live-preview"></div>
+                        <span class="picker-count" id="picker-count">0 / 8 selected</span>
                     </div>
                 </div>
 
@@ -107,6 +256,7 @@
                 </div>
             </div>
 
+            <!-- STEP 2 -->
             <div id="step-2" class="hidden">
                 <h3 class="step-title">2/2: Settings we've changed based on your setup</h3>
 
@@ -115,8 +265,7 @@
                         <div class="setting-icon">🗣️</div>
                         <div class="setting-text">
                             <h4>Contextual screen reader shortcuts</h4>
-                            <p>Ctrl + I: Voice details about selected object.<br>Ctrl + D: Voice board details (objects,
-                                types of objects).</p>
+                            <p><kbd class="inline-kbd">Ctrl</kbd> + <kbd class="inline-kbd">I</kbd>: Voice details about selected object. &nbsp;<kbd class="inline-kbd">Ctrl</kbd> + <kbd class="inline-kbd">D</kbd>: Voice board details.</p>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" checked>
@@ -127,7 +276,7 @@
                         <div class="setting-icon"><strong>ALT</strong></div>
                         <div class="setting-text">
                             <h4>Automatically read alt-text</h4>
-                            <p>If turned off, you can read alt-text of a selected image or diagram using Ctrl + I.</p>
+                            <p>If turned off, read alt-text of a selected image using <kbd class="inline-kbd">Ctrl</kbd> + <kbd class="inline-kbd">I</kbd>.</p>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" checked>
@@ -135,10 +284,10 @@
                         </label>
                     </div>
                     <div class="setting-card">
-                        <div class="setting-icon"><strong>ALT</strong></div>
+                        <div class="setting-icon">⌨️</div>
                         <div class="setting-text">
                             <h4>Spatial creation shortcuts</h4>
-                            <p>Idk what else to include here.</p>
+                            <p>Use <kbd class="inline-kbd">N</kbd> → <kbd class="inline-kbd">→</kbd> to create a note to the right, or <kbd class="inline-kbd">N</kbd> → <kbd class="inline-kbd">Shift ↓</kbd> to create and link below.</p>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" checked>
@@ -156,7 +305,7 @@
         </div>
     </div>
 
-    <script src="/js/app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 
 </html>
