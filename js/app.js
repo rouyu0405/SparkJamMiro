@@ -6,13 +6,13 @@ let boardX = 0, boardY = 0;
 const connections = [];
 
 // DOM refs
-const viewport      = document.getElementById('viewport');
-const board         = document.getElementById('board');
-const htmlLayer     = document.getElementById('html-layer');
-const svgCanvas     = document.getElementById('svg-canvas');
-const pathsGroup    = document.getElementById('paths');
+const viewport = document.getElementById('viewport');
+const board = document.getElementById('board');
+const htmlLayer = document.getElementById('html-layer');
+const svgCanvas = document.getElementById('svg-canvas');
+const pathsGroup = document.getElementById('paths');
 const drawingsGroup = document.getElementById('drawings');
-const sidebar       = document.getElementById('sidebar');
+const sidebar = document.getElementById('sidebar');
 
 // Miro 16-colour palette
 const miroColors = [
@@ -27,13 +27,13 @@ const miroColors = [
 ];
 let currentStickyColor = miroColors[0];
 
-const stickyColorPanel    = document.getElementById('sticky-color-panel');
-const colorGridContainer  = document.getElementById('color-grid-container');
+const stickyColorPanel = document.getElementById('sticky-color-panel');
+const colorGridContainer = document.getElementById('color-grid-container');
 
 // ─────────────────────────────────────────────────────────────────
 // 2. SCREEN READER HELPERS
 // ─────────────────────────────────────────────────────────────────
-const srLive   = document.getElementById('sr-live');
+const srLive = document.getElementById('sr-live');
 const srPolite = document.getElementById('sr-polite');
 
 /** Immediately interrupts — for critical state changes */
@@ -139,32 +139,32 @@ function focusBoardObject(obj) {
 // ─────────────────────────────────────────────────────────────────
 function getObjectDescription(obj) {
     const isContainer = obj.classList.contains('sticky-container');
-    const sticky  = isContainer ? obj.querySelector('.sticky-note') : null;
+    const sticky = isContainer ? obj.querySelector('.sticky-note') : null;
     const isFrame = obj.classList.contains('frame-box');
     const isShape = obj.classList.contains('shape-rect');
-    const isText  = obj.classList.contains('text-box');
-    const isDraw  = obj.classList.contains('drawing-box');
+    const isText = obj.classList.contains('text-box');
+    const isDraw = obj.classList.contains('drawing-box');
 
     let type = 'Object';
-    if (sticky || isContainer)  type = 'Sticky note';
+    if (sticky || isContainer) type = 'Sticky note';
     else if (isFrame) type = 'Frame';
     else if (isShape) type = 'Shape';
-    else if (isText)  type = 'Text box';
-    else if (isDraw)  type = 'Drawing';
+    else if (isText) type = 'Text box';
+    else if (isDraw) type = 'Drawing';
 
     const el = sticky || obj;
     const textarea = el.querySelector('textarea');
-    const content  = textarea ? textarea.value.trim() : '';
-    const colorEl  = sticky || (isContainer ? obj.querySelector('.sticky-note') : obj);
-    const color    = colorEl ? colorEl.style.backgroundColor : '';
+    const content = textarea ? textarea.value.trim() : '';
+    const colorEl = sticky || (isContainer ? obj.querySelector('.sticky-note') : obj);
+    const color = colorEl ? colorEl.style.backgroundColor : '';
 
     let desc = type;
-    if (color)   desc += `, colour ${color}`;
+    if (color) desc += `, colour ${color}`;
     if (content) desc += `. Content: "${content}"`;
-    else         desc += '. Empty — press Enter to add text.';
+    else desc += '. Empty — press Enter to add text.';
 
     const xPos = Math.round(parseFloat(obj.style.left) || 0);
-    const yPos = Math.round(parseFloat(obj.style.top)  || 0);
+    const yPos = Math.round(parseFloat(obj.style.top) || 0);
     desc += `. Position: ${xPos} right, ${yPos} down.`;
 
     return desc;
@@ -185,10 +185,10 @@ function describeBoardOverview() {
         const isContainer = obj.classList.contains('sticky-container');
         let type = 'object';
         if (isContainer || obj.classList.contains('sticky-note')) type = 'sticky note';
-        else if (obj.classList.contains('frame-box'))  type = 'frame';
+        else if (obj.classList.contains('frame-box')) type = 'frame';
         else if (obj.classList.contains('shape-rect')) type = 'shape';
-        else if (obj.classList.contains('text-box'))   type = 'text box';
-        else if (obj.classList.contains('drawing-box'))type = 'drawing';
+        else if (obj.classList.contains('text-box')) type = 'text box';
+        else if (obj.classList.contains('drawing-box')) type = 'drawing';
         counts[type] = (counts[type] || 0) + 1;
     });
     const summary = Object.entries(counts)
@@ -384,7 +384,7 @@ function buildStickyFormatBar(stickyEl, textarea, container) {
 
     // ── Align toggle ──────────────────────────────────────────────
     const alignments = ['center', 'left', 'right'];
-    const alignIcons  = ['≡', '«', '»'];
+    const alignIcons = ['≡', '«', '»'];
     const alignLabels = ['Centre aligned', 'Left aligned', 'Right aligned'];
     let alignIdx = 0;
     const alignBtn = makeFmtBtn(alignIcons[0], 'Text alignment', () => {
@@ -424,11 +424,11 @@ function buildStickyFormatBar(stickyEl, textarea, container) {
     div2.setAttribute('aria-hidden', 'true');
 
     // ── Colour dot ────────────────────────────────────────────────
-    const miniPalette   = ['#fff59d','#ffb74d','#f8bbd0','#b39ddb','#81d4fa','#a5d6a7','#eeeeee','#212121'];
-    const colorNames    = ['Yellow','Orange','Pink','Lavender','Blue','Green','White','Dark'];
-    let   colorIdx      = 0;
-    const colorDot      = document.createElement('div');
-    colorDot.className  = 'fmt-color-dot';
+    const miniPalette = ['#fff59d', '#ffb74d', '#f8bbd0', '#b39ddb', '#81d4fa', '#a5d6a7', '#eeeeee', '#212121'];
+    const colorNames = ['Yellow', 'Orange', 'Pink', 'Lavender', 'Blue', 'Green', 'White', 'Dark'];
+    let colorIdx = 0;
+    const colorDot = document.createElement('div');
+    colorDot.className = 'fmt-color-dot';
     colorDot.style.backgroundColor = stickyEl.style.backgroundColor || currentStickyColor;
     colorDot.setAttribute('role', 'button');
     colorDot.setAttribute('tabindex', '0');
@@ -449,10 +449,10 @@ function buildStickyFormatBar(stickyEl, textarea, container) {
     });
 
     // Expose the format-bar buttons to the in-textarea keyboard shortcuts
-    stickyEl._fmtBoldBtn    = boldBtn;
-    stickyEl._fmtItalicBtn  = italicBtn;
-    stickyEl._fmtSizeDown   = sizeDownBtn;
-    stickyEl._fmtSizeUp     = sizeUpBtn;
+    stickyEl._fmtBoldBtn = boldBtn;
+    stickyEl._fmtItalicBtn = italicBtn;
+    stickyEl._fmtSizeDown = sizeDownBtn;
+    stickyEl._fmtSizeUp = sizeUpBtn;
     stickyEl._fmtColorCycle = cycleStickyColor;
 
     bar.append(boldBtn, italicBtn, alignBtn, div1, sizeDownBtn, sizeUpBtn, div2, colorDot);
@@ -480,9 +480,9 @@ function makeFmtBtn(label, title, onClick) {
 function spawnDrawingObject(bbox, pathData) {
     const el = document.createElement('div');
     el.className = 'board-object drawing-box';
-    el.style.left   = `${bbox.x}px`;
-    el.style.top    = `${bbox.y}px`;
-    el.style.width  = `${bbox.width}px`;
+    el.style.left = `${bbox.x}px`;
+    el.style.top = `${bbox.y}px`;
+    el.style.width = `${bbox.width}px`;
     el.style.height = `${bbox.height}px`;
     el.setAttribute('tabindex', '0');
     el.setAttribute('role', 'img');
@@ -490,7 +490,7 @@ function spawnDrawingObject(bbox, pathData) {
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
-    svg.style.width  = '100%';
+    svg.style.width = '100%';
     svg.style.height = '100%';
 
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -515,7 +515,7 @@ function spawnDrawingObject(bbox, pathData) {
 function addColorPicker(el) {
     const palette = document.createElement('div');
     palette.className = 'color-palette';
-    const shapeColors = ['#ffeb3b','#ff9800','#ff5722','#e91e63','#9c27b0','#2196f3','#4caf50'];
+    const shapeColors = ['#ffeb3b', '#ff9800', '#ff5722', '#e91e63', '#9c27b0', '#2196f3', '#4caf50'];
     shapeColors.forEach(color => {
         const dot = document.createElement('div');
         dot.className = 'color-dot';
@@ -546,9 +546,9 @@ function spawnObject(type, x, y, opts = {}) {
     const el = document.createElement('div');
     el.className = 'board-object';
     el.style.left = `${x}px`;
-    el.style.top  = `${y}px`;
+    el.style.top = `${y}px`;
 
-    const wrapper  = document.createElement('div');
+    const wrapper = document.createElement('div');
     wrapper.className = 'text-container-wrapper';
     const textarea = document.createElement('textarea');
     textarea.placeholder = 'Type...';
@@ -560,11 +560,11 @@ function spawnObject(type, x, y, opts = {}) {
         container.className = 'sticky-container';
         container.style.position = 'absolute';
         container.style.left = `${x}px`;
-        container.style.top  = `${y}px`;
+        container.style.top = `${y}px`;
 
         el.classList.add('sticky-note');
-        el.style.left  = '0';
-        el.style.top   = '0';
+        el.style.left = '0';
+        el.style.top = '0';
         el.style.position = 'relative';
         el.style.backgroundColor = opts.color || currentStickyColor;
         el.setAttribute('tabindex', '0');
@@ -661,7 +661,7 @@ function spawnObject(type, x, y, opts = {}) {
         announcePolite('Sticky note created. Double-click or press Enter to add text.');
         return container;
 
-    // ── SHAPE ───────────────────────────────────────────────────
+        // ── SHAPE ───────────────────────────────────────────────────
     } else if (type === 'shape') {
         el.classList.add('shape-rect');
         el.setAttribute('tabindex', '0');
@@ -675,7 +675,7 @@ function spawnObject(type, x, y, opts = {}) {
         setTimeout(() => fitTextToContainer(el), 10);
         announcePolite('Shape created.');
 
-    // ── TEXT BOX ────────────────────────────────────────────────
+        // ── TEXT BOX ────────────────────────────────────────────────
     } else if (type === 'text') {
         el.classList.add('text-box');
         textarea.placeholder = 'Add text...';
@@ -686,7 +686,7 @@ function spawnObject(type, x, y, opts = {}) {
         setupTextEditing(el, textarea);
         announcePolite('Text box created.');
 
-    // ── FRAME ───────────────────────────────────────────────────
+        // ── FRAME ───────────────────────────────────────────────────
     } else if (type === 'frame') {
         el.classList.add('frame-box');
         el.setAttribute('tabindex', '0');
@@ -694,7 +694,7 @@ function spawnObject(type, x, y, opts = {}) {
         el.setAttribute('aria-label', 'Frame container');
         const title = document.createElement('div');
         title.className = 'frame-title';
-        title.innerText  = 'New Frame';
+        title.innerText = 'New Frame';
         title.setAttribute('aria-hidden', 'true');
         el.appendChild(title);
         announcePolite('Frame created.');
@@ -710,7 +710,7 @@ function spawnObject(type, x, y, opts = {}) {
 // 12. DRAGGING
 // ─────────────────────────────────────────────────────────────────
 function makeDraggable(el) {
-    el.onmousedown = function(e) {
+    el.onmousedown = function (e) {
         if (activeTool !== 'select') return;
         if (e.target.classList.contains('conn-handle') || e.target.classList.contains('color-dot') || e.target.closest('.color-palette')) return;
         if (el.classList.contains('editing')) return;
@@ -727,7 +727,7 @@ function makeDraggable(el) {
             document.querySelectorAll('.board-object:not(.frame-box)').forEach(obj => {
                 const r = obj.getBoundingClientRect();
                 if (r.left >= frameRect.left && r.right <= frameRect.right &&
-                    r.top  >= frameRect.top  && r.bottom <= frameRect.bottom) {
+                    r.top >= frameRect.top && r.bottom <= frameRect.bottom) {
                     attached.push({ element: obj, offsetX: obj.offsetLeft - el.offsetLeft, offsetY: obj.offsetTop - el.offsetTop });
                 }
             });
@@ -736,10 +736,10 @@ function makeDraggable(el) {
         function moveAt(px, py) {
             const c = getBoardCoords(px, py);
             el.style.left = `${c.x - shiftX}px`;
-            el.style.top  = `${c.y - shiftY}px`;
+            el.style.top = `${c.y - shiftY}px`;
             attached.forEach(item => {
                 item.element.style.left = `${parseFloat(el.style.left) + item.offsetX}px`;
-                item.element.style.top  = `${parseFloat(el.style.top)  + item.offsetY}px`;
+                item.element.style.top = `${parseFloat(el.style.top) + item.offsetY}px`;
             });
             updateConnections();
         }
@@ -753,7 +753,7 @@ function makeDraggable(el) {
 
 /** Draggable for .sticky-container — moves the whole container (bar + note) */
 function makeDraggableContainer(container, stickyEl) {
-    stickyEl.onmousedown = function(e) {
+    stickyEl.onmousedown = function (e) {
         if (activeTool !== 'select') return;
         if (e.target.classList.contains('conn-handle')) return;
         // If already in edit mode, don't start a drag
@@ -764,11 +764,11 @@ function makeDraggableContainer(container, stickyEl) {
         container.classList.add('active-container');
 
         const shiftX = e.clientX - parseFloat(container.style.left || 0) - boardX;
-        const shiftY = e.clientY - parseFloat(container.style.top  || 0) - boardY;
+        const shiftY = e.clientY - parseFloat(container.style.top || 0) - boardY;
 
         function moveAt(px, py) {
             container.style.left = `${px - boardX - shiftX}px`;
-            container.style.top  = `${py - boardY - shiftY}px`;
+            container.style.top = `${py - boardY - shiftY}px`;
             updateConnections();
         }
 
@@ -789,10 +789,11 @@ let currentSourceObj = null;
 function beginConnectionDraw(e, sourceObj) {
     e.stopPropagation();
     isDrawingConnection = true;
-    currentSourceObj   = sourceObj;
+    currentSourceObj = sourceObj;
     tempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    tempPath.setAttribute('stroke', '#9b99af');
-    tempPath.setAttribute('stroke-width', '2');
+    // FIX 1: was '#9b99af' (grey), now dark and visible
+    tempPath.setAttribute('stroke', '#050038');
+    tempPath.setAttribute('stroke-width', '2.5');
     tempPath.setAttribute('fill', 'none');
     tempPath.setAttribute('stroke-linecap', 'round');
     tempPath.setAttribute('marker-end', 'url(#arrowhead)');
@@ -822,8 +823,9 @@ window.addEventListener('mouseup', (e) => {
     const targetObj = hit?.closest('.board-object');
     if (targetObj && targetObj !== currentSourceObj) {
         const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        pathEl.setAttribute('stroke', '#9b99af');
-        pathEl.setAttribute('stroke-width', '2');
+        // FIX 2: was '#9b99af' (grey), now dark and visible
+        pathEl.setAttribute('stroke', '#050038');
+        pathEl.setAttribute('stroke-width', '2.5');
         pathEl.setAttribute('fill', 'none');
         pathEl.setAttribute('stroke-linecap', 'round');
         pathEl.setAttribute('marker-end', 'url(#arrowhead)');
@@ -842,9 +844,9 @@ function getObjRect(el) {
     const container = el.closest('.sticky-container');
     if (container) {
         return {
-            left:   parseFloat(container.style.left) || 0,
-            top:    parseFloat(container.style.top)  || 0,
-            width:  el.offsetWidth,
+            left: parseFloat(container.style.left) || 0,
+            top: parseFloat(container.style.top) || 0,
+            width: el.offsetWidth,
             height: el.offsetHeight
         };
     }
@@ -855,11 +857,11 @@ function updateConnections() {
     connections.forEach(conn => {
         const sR = getObjRect(conn.source);
         const tR = getObjRect(conn.target);
-        const sx = sR.left + sR.width / 2,  sy = sR.top + sR.height / 2;
-        const tx = tR.left + tR.width / 2,  ty = tR.top + tR.height / 2;
+        const sx = sR.left + sR.width / 2, sy = sR.top + sR.height / 2;
+        const tx = tR.left + tR.width / 2, ty = tR.top + tR.height / 2;
         const dx = tx - sx, dy = ty - sy;
-        const start = getIntersection(sR,  dx,  dy, false);
-        const end   = getIntersection(tR, -dx, -dy, true);
+        const start = getIntersection(sR, dx, dy, false);
+        const end = getIntersection(tR, -dx, -dy, true);
         conn.path.setAttribute('d', calcCurve(start.x, start.y, end.x, end.y));
     });
 }
@@ -867,13 +869,23 @@ function updateConnections() {
 function getIntersection(rect, dx, dy, isTarget) {
     const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
     const hw = rect.width / 2, hh = rect.height / 2;
+    // Guard: if dx and dy are both zero there's no direction to intersect along
+    if (dx === 0 && dy === 0) return { x: cx, y: cy };
     const scaleX = dx === 0 ? Infinity : hw / Math.abs(dx);
     const scaleY = dy === 0 ? Infinity : hh / Math.abs(dy);
-    const scale  = Math.min(scaleX, scaleY);
-    const padding = isTarget ? 14 : 0;
+    // scale brings us exactly to the box edge
+    const scale = Math.min(scaleX, scaleY);
+    // For the target end, pull back a fixed 8px so the arrowhead sits on the edge
+    const edgeX = cx + dx * scale;
+    const edgeY = cy + dy * scale;
+    if (!isTarget) return { x: edgeX, y: edgeY };
+    // Pull back 8px from the edge along the incoming direction
     const len = Math.sqrt(dx * dx + dy * dy);
-    const adj = Math.max(0, scale - (padding / len));
-    return { x: cx + dx * adj, y: cy + dy * adj };
+    const pullback = 8 / len;
+    return {
+        x: edgeX - dx * pullback,
+        y: edgeY - dy * pullback
+    };
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -883,10 +895,10 @@ let isWaitingForDirection = false;
 let directionTimeout = null;
 
 document.addEventListener('keydown', (e) => {
-    const inTextarea  = document.activeElement?.tagName === 'TEXTAREA';
-    const inInput     = document.activeElement?.tagName === 'INPUT';
-    const modalOpen   = onboardingOverlay && !onboardingOverlay.classList.contains('hidden');
-    const panelOpen   = shortcutsPanel && !shortcutsPanel.classList.contains('hidden');
+    const inTextarea = document.activeElement?.tagName === 'TEXTAREA';
+    const inInput = document.activeElement?.tagName === 'INPUT';
+    const modalOpen = onboardingOverlay && !onboardingOverlay.classList.contains('hidden');
+    const panelOpen = shortcutsPanel && !shortcutsPanel.classList.contains('hidden');
 
     // ── Inside textarea: handle Escape, Ctrl+B, Ctrl+Alt+I, Ctrl+[, Ctrl+] ──
     // (these are wired directly on the textarea in spawnObject; nothing extra here)
@@ -940,15 +952,29 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Delete' || e.key === 'Backspace') {
         const activeContainer = document.querySelector('.sticky-container.active-container');
         const activeObj = document.querySelector('.board-object.active-obj');
+
+        // FIX 3: helper to remove all connections attached to a given sticky/object element
+        function removeAttachedConnections(stickyOrObj) {
+            for (let i = connections.length - 1; i >= 0; i--) {
+                if (connections[i].source === stickyOrObj || connections[i].target === stickyOrObj) {
+                    connections[i].path.remove();
+                    connections.splice(i, 1);
+                }
+            }
+        }
+
         if (activeContainer) {
+            const stickyEl = activeContainer.querySelector('.sticky-note');
+            if (stickyEl) removeAttachedConnections(stickyEl);
             announceAssertive('Deleted sticky note.');
             activeContainer.remove();
             tabFocusIndex = -1;
         } else if (activeObj) {
+            removeAttachedConnections(activeObj);
             const type = activeObj.classList.contains('frame-box') ? 'frame'
                 : activeObj.classList.contains('shape-rect') ? 'shape'
-                : activeObj.classList.contains('text-box') ? 'text box'
-                : 'object';
+                    : activeObj.classList.contains('text-box') ? 'text box'
+                        : 'object';
             announceAssertive(`Deleted ${type}.`);
             activeObj.remove();
             tabFocusIndex = -1;
@@ -1000,11 +1026,11 @@ document.addEventListener('keydown', (e) => {
     // ── N: spatial creation mode (waits for arrow) ─────────────
     if ((e.key === 'n' || e.key === 'N') && !isWaitingForDirection && !e.ctrlKey && !e.metaKey) {
         const activeContainer = document.querySelector('.sticky-container.active-container');
-        const activeObj       = document.querySelector('.board-object.active-obj');
-        const selected        = activeContainer || activeObj;
+        const activeObj = document.querySelector('.board-object.active-obj');
+        const selected = activeContainer || activeObj;
         if (!selected) {
             // Create new sticky at a default position when nothing is selected
-            const cx = Math.round(window.innerWidth / 2)  - boardX;
+            const cx = Math.round(window.innerWidth / 2) - boardX;
             const cy = Math.round(window.innerHeight / 2) - boardY;
             spawnObject('sticky', cx, cy);
             selectToolById('select');
@@ -1027,13 +1053,13 @@ document.addEventListener('keydown', (e) => {
     // ── Arrow keys in spatial creation mode ───────────────────
     if (isWaitingForDirection) {
         const activeContainer = document.querySelector('.sticky-container.active-container');
-        const activeObj       = document.querySelector('.board-object.active-obj');
-        const selected        = activeContainer || activeObj;
+        const activeObj = document.querySelector('.board-object.active-obj');
+        const selected = activeContainer || activeObj;
         if (!selected) { isWaitingForDirection = false; return; }
 
-        const refEl   = activeContainer || activeObj;
-        const currentX = parseFloat(refEl.style.left)  || 0;
-        const currentY = parseFloat(refEl.style.top)   || 0;
+        const refEl = activeContainer || activeObj;
+        const currentX = parseFloat(refEl.style.left) || 0;
+        const currentY = parseFloat(refEl.style.top) || 0;
         const currentW = (activeContainer
             ? activeContainer.querySelector('.sticky-note')?.offsetWidth
             : activeObj?.offsetWidth) || 200;
@@ -1069,8 +1095,9 @@ document.addEventListener('keydown', (e) => {
                 const targetSticky = newContainer.querySelector('.sticky-note');
                 if (sourceSticky && targetSticky) {
                     const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    pathEl.setAttribute('stroke', '#9b99af');
-                    pathEl.setAttribute('stroke-width', '2');
+                    // FIX 4: was '#9b99af' (grey), now dark and visible
+                    pathEl.setAttribute('stroke', '#050038');
+                    pathEl.setAttribute('stroke-width', '2.5');
                     pathEl.setAttribute('fill', 'none');
                     pathEl.setAttribute('stroke-linecap', 'round');
                     pathEl.setAttribute('marker-end', 'url(#arrowhead)');
@@ -1088,37 +1115,37 @@ document.addEventListener('keydown', (e) => {
 // ─────────────────────────────────────────────────────────────────
 // 15. ONBOARDING LOGIC
 // ─────────────────────────────────────────────────────────────────
-const onboardingOverlay  = document.getElementById('onboarding-overlay');
-const step1              = document.getElementById('step-1');
-const step2              = document.getElementById('step-2');
-const stepCustomName     = document.getElementById('step-custom-name');
-const modalHeader        = document.querySelector('.modal-header');
-const selectBtns         = document.querySelectorAll('.select-tool-btn');
-const continueBtn        = document.getElementById('continue-btn');
-const doneBtn            = document.getElementById('done-btn');
-let   selectedConfig     = null;
+const onboardingOverlay = document.getElementById('onboarding-overlay');
+const step1 = document.getElementById('step-1');
+const step2 = document.getElementById('step-2');
+const stepCustomName = document.getElementById('step-custom-name');
+const modalHeader = document.querySelector('.modal-header');
+const selectBtns = document.querySelectorAll('.select-tool-btn');
+const continueBtn = document.getElementById('continue-btn');
+const doneBtn = document.getElementById('done-btn');
+let selectedConfig = null;
 
 const toolConfigs = {
     simple: [
-        { id: 'select',   iconSrc: 'img/icons/arrow.svg',   title: 'Select (V)' },
-        { id: 'frame',    iconSrc: 'img/icons/frame.svg',   title: 'Frame (F)' },
-        { id: 'sticky',   iconSrc: 'img/icons/sticky.svg',  title: 'Sticky Note (N)' },
-        { id: 'shape',    iconSrc: 'img/icons/shapes.svg',  title: 'Shape (S)' },
-        { id: 'format',   iconSrc: 'img/icons/format.svg',  title: 'Formats and Flow' },
+        { id: 'select', iconSrc: 'img/icons/arrow.svg', title: 'Select (V)' },
+        { id: 'frame', iconSrc: 'img/icons/frame.svg', title: 'Frame (F)' },
+        { id: 'sticky', iconSrc: 'img/icons/sticky.svg', title: 'Sticky Note (N)' },
+        { id: 'shape', iconSrc: 'img/icons/shapes.svg', title: 'Shape (S)' },
+        { id: 'format', iconSrc: 'img/icons/format.svg', title: 'Formats and Flow' },
         { id: 'diagrams', iconSrc: 'img/icons/connect.svg', title: 'Diagrams' }
     ],
     default: [
-        { id: 'select',   iconSrc: 'img/icons/arrow.svg',    title: 'Select (V)' },
-        { id: 'sticky',   iconSrc: 'img/icons/sticky.svg',   title: 'Sticky Note (N)' },
-        { id: 'frame',    iconSrc: 'img/icons/frame.svg',    title: 'Frame (F)' },
+        { id: 'select', iconSrc: 'img/icons/arrow.svg', title: 'Select (V)' },
+        { id: 'sticky', iconSrc: 'img/icons/sticky.svg', title: 'Sticky Note (N)' },
+        { id: 'frame', iconSrc: 'img/icons/frame.svg', title: 'Frame (F)' },
         { id: 'template', iconSrc: 'img/icons/template.svg', title: 'Templates' },
-        { id: 'text',     iconSrc: 'img/icons/text.svg',     title: 'Text (T)' },
-        { id: 'shape',    iconSrc: 'img/icons/shapes.svg',   title: 'Shape (S)' },
-        { id: 'pen',      iconSrc: 'img/icons/pen.svg',      title: 'Pen (P)' },
-        { id: 'format',   iconSrc: 'img/icons/format.svg',   title: 'Formats and Flow' },
-        { id: 'sticker',  iconSrc: 'img/icons/sticker.svg',  title: 'Stickers, emojis and GIFs' },
-        { id: 'comment',  iconSrc: 'img/icons/chat.svg',     title: 'Comment' },
-        { id: 'diagrams', iconSrc: 'img/icons/connect.svg',  title: 'Diagrams' }
+        { id: 'text', iconSrc: 'img/icons/text.svg', title: 'Text (T)' },
+        { id: 'shape', iconSrc: 'img/icons/shapes.svg', title: 'Shape (S)' },
+        { id: 'pen', iconSrc: 'img/icons/pen.svg', title: 'Pen (P)' },
+        { id: 'format', iconSrc: 'img/icons/format.svg', title: 'Formats and Flow' },
+        { id: 'sticker', iconSrc: 'img/icons/sticker.svg', title: 'Stickers, emojis and GIFs' },
+        { id: 'comment', iconSrc: 'img/icons/chat.svg', title: 'Comment' },
+        { id: 'diagrams', iconSrc: 'img/icons/connect.svg', title: 'Diagrams' }
     ],
     custom: []
 };
@@ -1214,18 +1241,18 @@ document.getElementById('cancel-custom-name-btn').addEventListener('click', () =
 // --- CUSTOMIZE CREATION TOOLBAR STEP ---
 
 const CREATION_TOOLBAR_LIBRARY = [
-    { id: 'select',        iconSrc: 'img/icons/arrow.svg',    label: 'Select',                          title: 'Select' },
-    { id: 'format',        iconSrc: 'img/icons/format.svg',   label: 'Formats and Flow',                title: 'Formats and Flow' },
-    { id: 'template',      iconSrc: 'img/icons/template.svg', label: 'Templates',                       title: 'Templates' },
-    { id: 'sticky',        iconSrc: 'img/icons/sticky.svg',   label: 'Sticky Note',                     title: 'Sticky Note' },
-    { id: 'text',          iconSrc: 'img/icons/text.svg',     label: 'Text',                            title: 'Text' },
-    { id: 'shapes',        iconSrc: 'img/icons/shapes.svg',   label: 'Shapes and Lines',                title: 'Shapes and Lines' },
-    { id: 'pen',           iconSrc: 'img/icons/pen.svg',      label: 'Pen Tool',                        title: 'Pen Tool' },
-    { id: 'frame',         iconSrc: 'img/icons/frame.svg',    label: 'Frame',                           title: 'Frame' },
-    { id: 'sticker',       iconSrc: 'img/icons/sticker.svg',  label: 'Stickers, emojis and GIFs',       title: 'Stickers, emojis and GIFs' },
-    { id: 'comment',       iconSrc: 'img/icons/chat.svg',     label: 'Comment',                         title: 'Comment' },
-    { id: 'diagrams',      iconSrc: 'img/icons/connect.svg',  label: 'Diagrams',                        title: 'Diagrams' },
-    { id: 'integrations',  iconSrc: 'img/icons/more.svg',     label: 'Tools, Media and Integrations',   title: 'Tools, Media and Integrations' },
+    { id: 'select', iconSrc: 'img/icons/arrow.svg', label: 'Select', title: 'Select' },
+    { id: 'format', iconSrc: 'img/icons/format.svg', label: 'Formats and Flow', title: 'Formats and Flow' },
+    { id: 'template', iconSrc: 'img/icons/template.svg', label: 'Templates', title: 'Templates' },
+    { id: 'sticky', iconSrc: 'img/icons/sticky.svg', label: 'Sticky Note', title: 'Sticky Note' },
+    { id: 'text', iconSrc: 'img/icons/text.svg', label: 'Text', title: 'Text' },
+    { id: 'shapes', iconSrc: 'img/icons/shapes.svg', label: 'Shapes and Lines', title: 'Shapes and Lines' },
+    { id: 'pen', iconSrc: 'img/icons/pen.svg', label: 'Pen Tool', title: 'Pen Tool' },
+    { id: 'frame', iconSrc: 'img/icons/frame.svg', label: 'Frame', title: 'Frame' },
+    { id: 'sticker', iconSrc: 'img/icons/sticker.svg', label: 'Stickers, emojis and GIFs', title: 'Stickers, emojis and GIFs' },
+    { id: 'comment', iconSrc: 'img/icons/chat.svg', label: 'Comment', title: 'Comment' },
+    { id: 'diagrams', iconSrc: 'img/icons/connect.svg', label: 'Diagrams', title: 'Diagrams' },
+    { id: 'integrations', iconSrc: 'img/icons/more.svg', label: 'Tools, Media and Integrations', title: 'Tools, Media and Integrations' },
 ];
 
 let creationToolbarDraft = CREATION_TOOLBAR_LIBRARY.map(t => ({ ...t, enabled: true }));
@@ -1286,7 +1313,7 @@ function renderToolRows() {
         handle.className = 'tool-drag-handle';
         handle.setAttribute('aria-label', 'Drag to reorder ' + tool.label);
         handle.tabIndex = -1;
-        handle.textContent = '☰'; // ☰
+        handle.textContent = '☰';
         row.appendChild(handle);
 
         // Drag events
@@ -1358,12 +1385,8 @@ function renderCustomColumnFromSaved() {
         span.appendChild(img);
         previewBox.appendChild(span);
     });
-    // const addBtn = document.createElement('span');
-    // addBtn.className = 'add-btn';
-    // addBtn.textContent = '+';
-    // previewBox.appendChild(addBtn);
 
-    // Mark the custom select button as selected (matches behavior at line ~586)
+    // Mark the custom select button as selected
     selectBtns.forEach(b => {
         b.classList.remove('selected');
         const orig = b.getAttribute('data-original-text');
@@ -1411,8 +1434,7 @@ function onRowDragStart(e) {
     dragSrcId = e.currentTarget.dataset.toolId;
     e.currentTarget.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
-    // Required for Firefox
-    try { e.dataTransfer.setData('text/plain', dragSrcId); } catch (_) {}
+    try { e.dataTransfer.setData('text/plain', dragSrcId); } catch (_) { }
 }
 
 function onRowDragOver(e) {
@@ -1552,7 +1574,6 @@ document.getElementById('settings-back-btn').addEventListener('click', () => {
     step1.classList.remove('hidden');
 });
 
-// --- 8. CUSTOM TOOLBAR PICKER ---
 // ─────────────────────────────────────────────────────────────────
 // 16. CUSTOM TOOLBAR PICKER
 // ─────────────────────────────────────────────────────────────────
@@ -1561,31 +1582,31 @@ let customSelectedTools = [];
 
 const allAvailableTools = {
     core: [
-        { id: 'select',  icon: '↖',  title: 'Select (V)',        label: 'Select' },
-        { id: 'frame',   icon: '🪟', title: 'Frame (F)',          label: 'Frame' },
+        { id: 'select', icon: '↖', title: 'Select (V)', label: 'Select' },
+        { id: 'frame', icon: '🪟', title: 'Frame (F)', label: 'Frame' },
     ],
     creation: [
-        { id: 'sticky',  icon: '📝', title: 'Sticky Note (N)',    label: 'Sticky' },
-        { id: 'text',    icon: 'T',  title: 'Text (T)',            label: 'Text' },
-        { id: 'shape',   icon: '⬛', title: 'Shape (S)',           label: 'Shape' },
-        { id: 'pen',     icon: '🖊', title: 'Pen (P)',             label: 'Pen' },
-        { id: 'connect', icon: '🔗', title: 'Connector',           label: 'Connect' },
-        { id: 'image',   icon: '🖼️', title: 'Image',              label: 'Image' },
-        { id: 'table',   icon: '⊞',  title: 'Table',              label: 'Table' },
-        { id: 'card',    icon: '📇', title: 'Card',                label: 'Card' },
+        { id: 'sticky', icon: '📝', title: 'Sticky Note (N)', label: 'Sticky' },
+        { id: 'text', icon: 'T', title: 'Text (T)', label: 'Text' },
+        { id: 'shape', icon: '⬛', title: 'Shape (S)', label: 'Shape' },
+        { id: 'pen', icon: '🖊', title: 'Pen (P)', label: 'Pen' },
+        { id: 'connect', icon: '🔗', title: 'Connector', label: 'Connect' },
+        { id: 'image', icon: '🖼️', title: 'Image', label: 'Image' },
+        { id: 'table', icon: '⊞', title: 'Table', label: 'Table' },
+        { id: 'card', icon: '📇', title: 'Card', label: 'Card' },
     ],
     a11y: [
-        { id: 'sr-describe',  icon: '🗣️', title: 'Describe (Ctrl+I)',  label: 'Describe' },
-        { id: 'sr-overview',  icon: '📋', title: 'Overview (Ctrl+D)',  label: 'Overview' },
-        { id: 'sr-navigate',  icon: '🧭', title: 'Navigate Objects',   label: 'Navigate' },
-        { id: 'sr-shortcuts', icon: '⌨️', title: 'Shortcuts Panel',    label: 'Shortcuts' },
+        { id: 'sr-describe', icon: '🗣️', title: 'Describe (Ctrl+I)', label: 'Describe' },
+        { id: 'sr-overview', icon: '📋', title: 'Overview (Ctrl+D)', label: 'Overview' },
+        { id: 'sr-navigate', icon: '🧭', title: 'Navigate Objects', label: 'Navigate' },
+        { id: 'sr-shortcuts', icon: '⌨️', title: 'Shortcuts Panel', label: 'Shortcuts' },
     ]
 };
 
 function initCustomPicker() {
-    renderPickerCategory('picker-grid-core',     allAvailableTools.core);
+    renderPickerCategory('picker-grid-core', allAvailableTools.core);
     renderPickerCategory('picker-grid-creation', allAvailableTools.creation);
-    renderPickerCategory('picker-grid-a11y',     allAvailableTools.a11y);
+    renderPickerCategory('picker-grid-a11y', allAvailableTools.a11y);
     updatePickerPreview();
 }
 
@@ -1631,7 +1652,7 @@ function togglePickerTool(tool, chipEl) {
 
 function updatePickerPreview() {
     const livePreview = document.getElementById('picker-live-preview');
-    const countEl     = document.getElementById('picker-count');
+    const countEl = document.getElementById('picker-count');
     if (!livePreview || !countEl) return;
     livePreview.innerHTML = '';
     if (customSelectedTools.length === 0) {
@@ -1664,10 +1685,6 @@ function updateCustomPreviewBox() {
             s.title = tool.label;
             previewBox.appendChild(s);
         });
-        // const add = document.createElement('span');
-        // add.className = 'add-btn';
-        // add.textContent = '+';
-        // previewBox.appendChild(add);
     }
 }
 
@@ -1676,9 +1693,9 @@ initCustomPicker();
 // ─────────────────────────────────────────────────────────────────
 // 17. KEYBOARD SHORTCUTS PANEL
 // ─────────────────────────────────────────────────────────────────
-const shortcutsPanel     = document.getElementById('shortcuts-panel');
+const shortcutsPanel = document.getElementById('shortcuts-panel');
 const shortcutsToggleBtn = document.getElementById('shortcuts-toggle-btn');
-const shortcutsCloseBtn  = document.getElementById('shortcuts-close-btn');
+const shortcutsCloseBtn = document.getElementById('shortcuts-close-btn');
 
 function openShortcutsPanel() {
     shortcutsPanel.classList.remove('hidden');
