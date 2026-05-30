@@ -1,3 +1,3 @@
 # SparkJamMiro
 
-https://bluejunimo.github.io/SparkJamMiroExhibition/
+https://rouyu0405.github.io/SparkJamMiro/
